@@ -4,25 +4,29 @@ from django.utils.translation import gettext_lazy as _
 
 
 class Machine(models.Model):
-    created = models.DateTimeField(auto_now_add=True)
-    machinename = models.CharField(max_length=100, blank=False)
-    machineid = models.IntegerField(null=False)
     class MachineType(models.TextChoices):
         ANY="ANY", _("Any"),
         DESKTOP = "DT", _("Desktop"),
         CLOUDSERVER = "CS", _('Cloud Server')
         SINGLE_BOARD_COMPUTERS = "SBC", _('Single Board')
+    created = models.DateTimeField(auto_now_add=True)
+    machinename = models.CharField(max_length=100, blank=False, unique=True)
+    machineid = models.IntegerField(null=False, unique=True)
+    hasgpu = models.BooleanField(default=False)
     machinetype = models.CharField(
         max_length=5,
         choices=MachineType.choices,
         default=MachineType.ANY)
-    def is_defined(self):
+    def is_tangible(self):
         return self.machinetype in {
             MachineType.DESKTOP, 
-            MachineType.CLOUDSERVER, 
             MachineType.SINGLE_BOARD_COMPUTERS
             }
-    
+    def is_recent(self):
+        return True
+    def has_gpu(self):
+        return self.hasgpu is True
+
 
 class MachineInfo(models.Model):
     machine = models.ForeignKey(Machine, on_delete=models.CASCADE)

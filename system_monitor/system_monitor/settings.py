@@ -73,6 +73,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'system_monitor.wsgi.application'
 
+"""
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES':[
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}
+"""
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
