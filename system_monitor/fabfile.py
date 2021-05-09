@@ -25,4 +25,7 @@ def shell():
 def runserver():
    local('python manage.py runserver')
 
-
+@task
+@runs_once
+def test():
+   local('python manage.py test')

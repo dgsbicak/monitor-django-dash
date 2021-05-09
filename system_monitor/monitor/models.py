@@ -1,7 +1,8 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-# Create your models here.
 
+from datetime import date, datetime, timedelta
+from django.utils import timezone
 
 class Machine(models.Model):
     class MachineType(models.TextChoices):
@@ -17,18 +18,25 @@ class Machine(models.Model):
         max_length=5,
         choices=MachineType.choices,
         default=MachineType.ANY)
+
     def is_tangible(self):
         return self.machinetype in {
             MachineType.DESKTOP, 
             MachineType.SINGLE_BOARD_COMPUTERS
             }
-    def is_recent(self):
-        return True
     def has_gpu(self):
         return self.hasgpu is True
+    
+    def __str__(self):
+        return "{}".format(self.machinename)
 
 
 class MachineInfo(models.Model):
+
+    class TodaysObjects(models.Manager):
+        def get_queryset(self):
+            return super().get_queryset().filter(created__gte=(timezone.now() - timedelta(days=1)))
+
     machine = models.ForeignKey(Machine, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     cpuutil = models.FloatField()
@@ -42,4 +50,14 @@ class MachineInfo(models.Model):
     network_t = models.FloatField(null=True)
     internet_access = models.BooleanField(null=True)
     running = models.BooleanField()
+    objects = models.Manager() # default manager
+    todaysobjects = TodaysObjects() # custom manager
 
+    class Meta:
+        ordering = ('-created',)
+
+    def __str__(self):
+        return "Machine-{}, is running: {}".format(self.machine, self.running)
+
+    def is_recent(self):
+        return self.created > (timezone.now() - timedelta(days=1))
