@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -137,6 +139,33 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
+
+STATIC_ROOT = './static/'
+MEDIA_ROOT = './media/'
+
+CELERY_BROKER_URL = 'amqp://testuser:testpass@localhost:5672/myvhost'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+
+LOGGING = {
+    'version' : 1,
+    'disable_existing_loggers': False,
+    'handlers':{
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers':{
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+        },
+        'celery': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+        },
+    },
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
