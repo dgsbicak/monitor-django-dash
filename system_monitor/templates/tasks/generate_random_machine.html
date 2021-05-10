@@ -1,0 +1,22 @@
+<!-- templates/tasks/generate_random_machine.html-->
+{% extends 'base.html' %}
+
+{% block title %} Generate Machines {% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+   Hi {{ user.username }}!
+   <form id="login-form" class="form" action="" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="total" class="text-info">Total:</label><br>
+            <input type="text" name="total" id="total" class="form-control">
+        </div>
+        <div class="form-group">
+            <input type="submit" name="submit" class="btn btn-info btn-md" value="submit">
+        </div>
+{% else %}
+   <p>You are not logged in</p>
+   <a href="{% url 'login' %}">Log In</a>
+{% endif %}
+{% endblock %}
