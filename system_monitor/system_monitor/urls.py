@@ -20,9 +20,9 @@ from monitor.views import home_view
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('accounts/', include('django.contrib.auth.urls')),
-    path('', home_view, name='home'), #TemplateView.as_view(template_name='home.html'), name='home'),
-    path('api/', include('monitor_api.urls', namespace='monitor_api')),
-    path('', include('monitor.urls', namespace='monitor') )
+    path('app/admin/', admin.site.urls),
+    path('app/accounts/', include('django.contrib.auth.urls')),
+    path('app/', home_view, name='home'), #TemplateView.as_view(template_name='home.html'), name='home'),
+    path('app/api/', include('monitor_api.urls', namespace='monitor_api')),
+    path('app/monitor/', include('monitor.urls', namespace='monitor') )
 ]

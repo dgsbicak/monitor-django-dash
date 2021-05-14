@@ -11,7 +11,14 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
 import os
+import pathlib
+
+env_folder = './.env'
+env_files = os.listdir(env_folder)
+for env_file in env_files:
+    load_dotenv(os.path.join(env_folder, env_file))
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,7 +32,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-1!_p)(mqs120z#4-!g05#hb!u_bou(m#=93*(#41px_1achgg3'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(int(os.environ.get("DJANGO_DEBUG", 1)))
 
 ALLOWED_HOSTS = [
     "*"
@@ -93,11 +100,11 @@ LOGOUT_REDIRECT_URL = 'home'
 DATABASES = {
     'default': {
         'ENGINE' : 'django.db.backends.postgresql',
-        'NAME': 'monitordb1',
-        'USER': 'watcher1',
-        'PASSWORD': 'rtyfghvbn',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'NAME': os.environ.get("APP_DB_NAME"),
+        'USER': os.environ.get("APP_DB_USER"),
+        'PASSWORD': os.environ.get("APP_DB_PASS"),
+        'HOST': os.environ.get("DB_HOSTNAME"),
+        'PORT': os.environ.get("DB_PORT")
     }
 }
 
@@ -144,30 +151,56 @@ MEDIA_URL = '/media/'
 STATIC_ROOT = './static/'
 MEDIA_ROOT = './media/'
 
-CELERY_BROKER_URL = 'amqp://testuser:testpass@localhost:5672/myvhost'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND')
+
+# DJANGO LOGGER
+
+LOG_PATH = os.environ.get('LOG_FILE', 'logs/app.log')
+dirname = os.path.dirname(LOG_PATH)
+if dirname != '':
+    pathlib.Path(dirname).mkdir(parents=True, exist_ok=True)
 
 LOGGING = {
-    'version' : 1,
+    'version': 1,
     'disable_existing_loggers': False,
-    'handlers':{
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} : {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {asctime} : {message}',
+            'style': '{',
+        },},
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOG_PATH,
+            'formatter' : 'simple',
+            'backupCount': int(os.environ.get('LOG_BACKUP_COUNT', 2)),
+            'maxBytes' : int(os.environ.get('LOG_MAX_BYTES', 5242880)),
+        },
         'console': {
+            'level': 'DEBUG',
             'class': 'logging.StreamHandler',
+            'formatter' : 'verbose',
         },
     },
-    'loggers':{
+    'loggers': {
         'django': {
-            'handlers': ['console'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
-        },
-        'celery': {
-            'handlers': ['console'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'handlers': ['file', 'console'],
+            'level': os.environ.get('LOG_LEVEL', 2).upper(),
+            'propagate': True,
         },
     },
 }
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+USE_X_FORWARDED_HOST = True

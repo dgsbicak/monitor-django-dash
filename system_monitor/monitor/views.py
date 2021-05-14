@@ -19,7 +19,7 @@ class GenerateRandomMachineView(FormView):
         return redirect("/api/machine")
 
 
-@login_required(login_url="/accounts/login/")
+@login_required(login_url="/app/accounts/login/")
 def home_view(request):
     return render(request, "home.html")
 
