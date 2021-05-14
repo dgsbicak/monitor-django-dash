@@ -1,2 +1,2 @@
 # monitor-django-dash
-A Django project for system monitoring. 
+A sample Django project for educational purposes.
