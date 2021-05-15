@@ -1,6 +1,7 @@
-from celery import shared_task
 from django.utils.crypto import get_random_string
 from random import randint
+from celery import shared_task
+
 from system_monitor import celery_app
 from .models import Machine
 

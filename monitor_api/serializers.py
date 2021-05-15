@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from monitor.models import Machine, MachineInfo
 from django.contrib.auth.models import User
+
+from .models import Machine, MachineInfo
 
 
 class UserSerializer(serializers.ModelSerializer):

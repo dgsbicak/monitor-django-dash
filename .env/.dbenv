@@ -1,0 +1,10 @@
+
+POSTGRES_USER=root
+POSTGRES_PASSWORD=password
+APP_DB_USER=sampleuser
+APP_DB_PASS=samplepass
+APP_DB_NAME=sampledb
+DB_HOSTNAME=192.168.0.27
+DB_PORT=5532
+
+
