@@ -67,7 +67,6 @@ services:
             retries: 10
         env_file:
             - ./.env/.dbenv
-
         logging:
             options:
                 max-size: 5m
