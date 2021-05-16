@@ -232,3 +232,4 @@ Thumbs.db
 
 
 configs/nginx/cert/*
+.env/.app

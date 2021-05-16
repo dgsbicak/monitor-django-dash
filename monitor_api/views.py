@@ -11,8 +11,8 @@ from rest_framework import permissions
 from .models import Machine, MachineInfo
 from .serializers import MachineSerializer, MachineInfoSerializer, UserSerializer
 from .forms import GenerateRandomMachineForm
-from .tasks import create_random_machine
-
+from .tasks import create_random_machine, send_mail_no_space_left
+from utils import logger, disk_space_filled
 
 class GenerateRandomMachineView(FormView):
     template_name = "tasks/generate_random_machine.html"
@@ -20,8 +20,6 @@ class GenerateRandomMachineView(FormView):
     def form_valid(self, form):
         total = form.cleaned_data.get('total')
         create_random_machine.delay(total)
-        messages.success(self.request, 
-            "We are generating your random machines! Wait a moment and refresh this page.")
         return redirect("/app/api/machine")
 
 
@@ -42,16 +40,28 @@ class MachineList(generics.ListCreateAPIView):
     queryset = Machine.objects.all()
     serializer_class = MachineSerializer
     permission_classes = [permissions.IsAuthenticated]
-
+    
 class MachineDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Machine.objects.all()
     serializer_class = MachineSerializer
     permission_classes = [permissions.IsAuthenticated]
+    lookup_field = "machinename"
 
 class MachineInfoList(generics.ListCreateAPIView):
     queryset = MachineInfo.objects.all()
     serializer_class = MachineInfoSerializer
     permission_classes = [permissions.IsAuthenticated]
+    
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        data = self.request.data
+        spaceleft = float( data.get("diskspaceleft") )
+        machine_name = Machine.objects.get(pk=data["machine"]).machinename
+        is_filled = disk_space_filled(spaceleft)
+        # send mail via celery
+        if is_filled:
+            send_mail_no_space_left.delay(machine_name, spaceleft)
+
 
 class MachineInfoDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = MachineInfo.objects.all()

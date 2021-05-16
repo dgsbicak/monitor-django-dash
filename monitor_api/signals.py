@@ -5,5 +5,7 @@ from monitor_api.models import Machine, MachineInfo
 from utils import logger
 
 @receiver(post_delete, sender=Machine)
-def check_machine_alarm_state(sender, **kwargs):
+def machine_delete_check(sender, **kwargs):
     logger.warning(f"Machine deleted!: {str(kwargs['instance'])}")
+    # Do Something
+    # -->
