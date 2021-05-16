@@ -15,6 +15,9 @@ from dotenv import load_dotenv
 import os
 import pathlib
 
+from celery.schedules import crontab
+
+
 env_folder = './.env'
 env_files = os.listdir(env_folder)
 for env_file in env_files:
@@ -144,7 +147,17 @@ STATIC_ROOT = '/static/'
 
 CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND')
-
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_BEAT_SCHEDULE = {
+        'test-every-30-seconds': {
+            'task': 'monitor_api.tasks.test',
+            'schedule': 30.0
+            },
+        'check-info-flow-each-day': {
+            'task': 'monitor_api.tasks.check_stopped_machine_infos',
+            'schedule': crontab(hour="*/24")
+            },
+    }
 
 # DJANGO LOGGER
 

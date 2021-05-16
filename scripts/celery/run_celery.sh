@@ -1,4 +1,4 @@
 #!/bin/sh
 
 
- celery -A system_monitor worker -l INFO
+celery -A system_monitor worker -l INFO

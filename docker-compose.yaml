@@ -1,4 +1,5 @@
-version: '3'
+version: '3.3'
+
 
 services:
     web:
@@ -12,9 +13,6 @@ services:
         entrypoint: sh scripts/django/01-init.sh
         ports:
             - 8000:8000
-        links:
-            - redis
-            - rabbit
         env_file:
             - ./.env/.django
             - ./.env/.dbenv
@@ -22,18 +20,34 @@ services:
             - app-network
         depends_on:
             - database
-    worker:
+        ulimits:
+            nproc: 65535
+            nofile:
+                soft: 20000
+                hard: 40000
+    celery:
         build:
             context: .
             dockerfile: compose/django/Dockerfile
-        command: sh scripts/celery/run_celery.sh
+        command: celery -A system_monitor worker -l INFO
         volumes:
             - .:/src/app
-        links:
-            - rabbit
-            - redis
         depends_on:
             - rabbit
+            - redis
+        restart: unless-stopped
+    celery-beat:
+        build:
+            context: .
+            dockerfile: compose/django/Dockerfile
+        command: celery -A system_monitor beat -l INFO
+        volumes:
+            - .:/src/app
+        depends_on:
+            - rabbit
+            - redis
+        restart: unless-stopped
+
     redis:
         image: redis:latest
         container_name: rd01
