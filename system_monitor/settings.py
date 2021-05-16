@@ -34,9 +34,7 @@ SECRET_KEY = 'django-insecure-1!_p)(mqs120z#4-!g05#hb!u_bou(m#=93*(#41px_1achgg3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(int(os.environ.get("DJANGO_DEBUG", 1)))
 
-ALLOWED_HOSTS = [
-    "*"
-]
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split()
 
 
 # Application definition
@@ -82,13 +80,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'system_monitor.wsgi.application'
 
-"""
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES':[
-        'rest_framework.permissions.IsAuthenticated',
-    ]
-}
-"""
+
 
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
@@ -147,8 +139,12 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = '/static/'
 
+
+# CELERY 
+
 CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND')
+
 
 # DJANGO LOGGER
 
@@ -200,3 +196,21 @@ LOGGING = {
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 USE_X_FORWARDED_HOST = True
+
+
+# PAGINATION
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS' : 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE':10
+}
+
+
+# PERMISSIONS
+
+
+# REST_FRAMEWORK = {
+#     'DEFAULT_PERMISSION_CLASSES':[
+#         'rest_framework.permissions.IsAuthenticated',
+#     ]
+# }

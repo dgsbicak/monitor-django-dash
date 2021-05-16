@@ -18,6 +18,9 @@ class Machine(models.Model):
         max_length=5,
         choices=MachineType.choices,
         default=MachineType.ANY)
+    
+    class Meta:
+        ordering = ('-created',)
 
     def is_tangible(self):
         return self.machinetype in {
