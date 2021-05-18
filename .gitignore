@@ -233,3 +233,4 @@ Thumbs.db
 
 configs/nginx/cert/*
 .env/.app
+celerybeat-schedule

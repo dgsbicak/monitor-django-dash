@@ -6,5 +6,4 @@ APP_DB_PASS=samplepass
 APP_DB_NAME=sampledb
 DB_HOSTNAME=192.168.0.27
 DB_PORT=5532
-
-
+POSTGRESQL_URL=psql://sampleuser:samplepass@192.168.0.27:5532/sampledb

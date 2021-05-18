@@ -1,7 +1,9 @@
 
-DJANGO_DEBUG=1
-DJANGO_ALLOWED_HOSTS=*
-HOST_IP=192.168.0.26
+
+SECRET_KEY=django-insecure-1!_p)(mqs120z#4-!g05#hb!u_bou(m#=93*(#41px_1achgg3
+
+DJANGO_DEBUG=true
+DJANGO_ALLOWED_HOSTS=192.168.0.27
 
 
 # LOGGER

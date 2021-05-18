@@ -11,18 +11,19 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
-from dotenv import load_dotenv
+import environ
 import os
-import pathlib
-
 from celery.schedules import crontab
 
 
-env_folder = './.env'
-env_files = os.listdir(env_folder)
-for env_file in env_files:
-    load_dotenv(os.path.join(env_folder, env_file))
+env = environ.Env()
+env_folder = '.env'
 
+for env_file in os.listdir(env_folder):
+    environ.Env.read_env( 
+        os.path.join(env_folder, env_file)
+    )
+    
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,12 +33,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-1!_p)(mqs120z#4-!g05#hb!u_bou(m#=93*(#41px_1achgg3'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(int(os.environ.get("DJANGO_DEBUG", 1)))
+DEBUG = env.bool("DJANGO_DEBUG")
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split()
+ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS")
 
 
 # Application definition
@@ -83,24 +84,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'system_monitor.wsgi.application'
 
-
-
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
-
-# Database
-# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE' : 'django.db.backends.postgresql',
-        'NAME': os.environ.get("APP_DB_NAME"),
-        'USER': os.environ.get("APP_DB_USER"),
-        'PASSWORD': os.environ.get("APP_DB_PASS"),
-        'HOST': os.environ.get("DB_HOSTNAME"),
-        'PORT': os.environ.get("DB_PORT")
-    }
-}
 
 
 # Password validation
@@ -143,28 +128,12 @@ STATIC_URL = '/static/'
 STATIC_ROOT = '/static/'
 
 
-# CELERY 
-
-CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
-CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND')
-CELERY_TIMEZONE = TIME_ZONE
-CELERY_BEAT_SCHEDULE = {
-        'test-every-30-seconds': {
-            'task': 'monitor_api.tasks.test',
-            'schedule': 30.0
-            },
-        'check-info-flow-each-day': {
-            'task': 'monitor_api.tasks.check_stopped_machine_infos',
-            'schedule': crontab(hour="*/24")
-            },
-    }
-
 # DJANGO LOGGER
 
-LOG_PATH = os.environ.get('LOG_FILE', 'logs/app.log')
+LOG_PATH = env.str('LOG_FILE', 'logs/app.log')
 dirname = os.path.dirname(LOG_PATH)
 if dirname != '':
-    pathlib.Path(dirname).mkdir(parents=True, exist_ok=True)
+    Path(dirname).mkdir(parents=True, exist_ok=True)
 
 LOGGING = {
     'version': 1,
@@ -184,8 +153,8 @@ LOGGING = {
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': LOG_PATH,
             'formatter' : 'simple',
-            'backupCount': int(os.environ.get('LOG_BACKUP_COUNT', 2)),
-            'maxBytes' : int(os.environ.get('LOG_MAX_BYTES', 5242880)),
+            'backupCount': env.int('LOG_BACKUP_COUNT'),
+            'maxBytes' : env.int('LOG_MAX_BYTES'),
         },
         'console': {
             'level': 'DEBUG',
@@ -196,7 +165,7 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['file', 'console'],
-            'level': os.environ.get('LOG_LEVEL', 2).upper(),
+            'level': env.str('LOG_LEVEL').upper(),
             'propagate': True,
         },
     },
@@ -211,31 +180,44 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 USE_X_FORWARDED_HOST = True
 
 
-# PAGINATION
+# CELERY 
+CELERY_BROKER_URL = env('CELERY_BROKER_URL')
+CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND')
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_BEAT_SCHEDULE = {
+        'test-every-300-seconds': {
+            'task': 'monitor_api.tasks.test',
+            'schedule': 300.0
+            },
+        'check-info-flow-each-day': {
+            'task': 'monitor_api.tasks.check_stopped_machine_infos',
+            'schedule': crontab(hour=12)
+            },
+    }
 
+
+# Database
+# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
+
+DATABASES = {
+    'default': env.db("POSTGRESQL_URL"),
+}
+
+
+# Rest Framework Configs
 REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES':[
+         'rest_framework.permissions.IsAuthenticated',
+        ],
     'DEFAULT_PAGINATION_CLASS' : 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE':10
 }
 
 
-# PERMISSIONS
-
-
-# REST_FRAMEWORK = {
-#     'DEFAULT_PERMISSION_CLASSES':[
-#         'rest_framework.permissions.IsAuthenticated',
-#     ]
-# }
-
-
 # EMAIL
+EMAIL_CONFIG=env.email_url('EMAIL_URL')
+EMAIL_CONFIG["EMAIL_USE_TLS"] = env.bool('EMAIL_USE_TLS')
+vars().update(EMAIL_CONFIG)
 
-# SMTP Mail service with decouple
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = os.environ.get('EMAIL_HOST')
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
-EMAIL_PORT = int( os.environ.get('EMAIL_PORT'))
-EMAIL_USE_TLS = bool(int( os.environ.get('EMAIL_USE_TLS') ))
-DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER')
+
+

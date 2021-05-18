@@ -1,6 +1,5 @@
 version: '3.3'
 
-
 services:
     web:
         build:
@@ -8,41 +7,36 @@ services:
             dockerfile: compose/django/Dockerfile
         container_name: web01
         volumes:
-            - .:/src/app
-            - ./static:/static
+            - .:/app
         entrypoint: sh scripts/django/01-init.sh
         ports:
             - 8000:8000
         env_file:
             - ./.env/.django
             - ./.env/.dbenv
-        networks:
-            - app-network
         depends_on:
             - database
-        ulimits:
-            nproc: 65535
-            nofile:
-                soft: 20000
-                hard: 40000
+            - nginx
+
     celery:
         build:
             context: .
             dockerfile: compose/django/Dockerfile
         command: celery -A system_monitor worker -l INFO
         volumes:
-            - .:/src/app
+            - .:/app
         depends_on:
             - rabbit
             - redis
         restart: unless-stopped
+
     celery-beat:
         build:
             context: .
             dockerfile: compose/django/Dockerfile
         command: celery -A system_monitor beat -l INFO
         volumes:
-            - .:/src/app
+            - .:/app
         depends_on:
             - rabbit
             - redis
@@ -56,8 +50,7 @@ services:
         entrypoint: redis-server --appendonly yes
         ports:
             - 6000:6379
-        networks:
-            - app-network
+
     nginx:
         image: nginx:latest
         container_name: nz01
@@ -69,8 +62,6 @@ services:
         ports:
             - 8080:80
             - 443:443
-        networks:
-            - app-network
 
     database:
         image: postgres:13.1
@@ -81,10 +72,6 @@ services:
             retries: 10
         env_file:
             - ./.env/.dbenv
-        logging:
-            options:
-                max-size: 5m
-                max-file: "2"
         volumes:
             - local_postgres_data:/var/lib/postgresql/data
             - ./scripts/db:/docker-entrypoint-initdb.d/
@@ -101,10 +88,6 @@ services:
         volumes:
             - ./scripts/rabbit:/rabbit
     
-networks:
-    app-network:
-        driver: bridge
-
 volumes:
     local_postgres_data: {}
     redis_data: {}

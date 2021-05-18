@@ -1,3 +1,4 @@
+django-environ
 django
 djangorestframework
 psycopg2-binary
@@ -5,6 +6,5 @@ celery
 redis
 flower
 requests
-python-dotenv
 gunicorn
 amqp

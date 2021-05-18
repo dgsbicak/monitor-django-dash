@@ -23,3 +23,6 @@ runcorn:
 
 collect:
 	python manage.py collectstatic
+
+up:
+	docker-compose up -d
