@@ -6,7 +6,7 @@ from celery import shared_task
 from celery.schedules import crontab
 
 from system_monitor import celery_app
-from .models import Machine, MachineInfo
+from monitor_api.models import Machine, MachineInfo
 from utils import logger
 
 

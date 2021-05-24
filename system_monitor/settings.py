@@ -42,7 +42,6 @@ ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS")
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -51,7 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'monitor_api'
+    'monitor_api',
 ]
 
 MIDDLEWARE = [
@@ -106,6 +105,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = "monitor_api.User"
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
@@ -125,11 +126,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 # DJANGO LOGGER
-
 LOG_PATH = env.str('LOG_FILE', 'logs/app.log')
 dirname = os.path.dirname(LOG_PATH)
 if dirname != '':
@@ -180,20 +180,20 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 USE_X_FORWARDED_HOST = True
 
 
-# CELERY 
+# CELERY
 CELERY_BROKER_URL = env('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND')
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_BEAT_SCHEDULE = {
-        'test-every-300-seconds': {
-            'task': 'monitor_api.tasks.test',
-            'schedule': 300.0
-            },
-        'check-info-flow-each-day': {
-            'task': 'monitor_api.tasks.check_stopped_machine_infos',
-            'schedule': crontab(hour=12)
-            },
-    }
+    'test-every-300-seconds': {
+        'task': 'monitor_api.utils.tasks.test',
+        'schedule': 300.0
+        },
+    'check-info-flow-each-day': {
+        'task': 'monitor_api.utils.tasks.check_stopped_machine_infos',
+        'schedule': crontab(hour=12)
+        },
+}
 
 
 # Database
@@ -209,8 +209,8 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES':[
          'rest_framework.permissions.IsAuthenticated',
         ],
-    'DEFAULT_PAGINATION_CLASS' : 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE':10
+    'DEFAULT_PAGINATION_CLASS' : 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE':100
 }
 
 

@@ -6,7 +6,7 @@
 {% block content %}
 {% if user.is_authenticated %}
    Hi {{ user.username }}!
-   <form id="login-form" class="form" action="" method="post">
+   <form id="generate-machine" class="form" action="" method="post">
         {% csrf_token %}
         <div class="form-group">
             <label for="total" class="text-info">Number of random machines to be generated:</label><br>

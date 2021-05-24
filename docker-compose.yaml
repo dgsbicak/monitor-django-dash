@@ -9,15 +9,11 @@ services:
         volumes:
             - .:/app
         entrypoint: sh scripts/django/01-init.sh
-        ports:
-            - 8000:8000
         env_file:
             - ./.env/.django
             - ./.env/.dbenv
         depends_on:
             - database
-            - nginx
-
     celery:
         build:
             context: .
@@ -28,7 +24,6 @@ services:
         depends_on:
             - rabbit
             - redis
-        restart: unless-stopped
 
     celery-beat:
         build:
@@ -38,9 +33,7 @@ services:
         volumes:
             - .:/app
         depends_on:
-            - rabbit
-            - redis
-        restart: unless-stopped
+            - celery
 
     redis:
         image: redis:latest
@@ -48,8 +41,6 @@ services:
         volumes:
             - redis_data:/data
         entrypoint: redis-server --appendonly yes
-        ports:
-            - 6000:6379
 
     nginx:
         image: nginx:latest
@@ -62,9 +53,11 @@ services:
         ports:
             - 8080:80
             - 443:443
+        depends_on:
+            - web
 
     database:
-        image: postgres:13.1
+        image: postgres:13.3
         healthcheck:
             test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "root" ]
             timeout: 45s
@@ -75,8 +68,6 @@ services:
         volumes:
             - local_postgres_data:/var/lib/postgresql/data
             - ./scripts/db:/docker-entrypoint-initdb.d/
-        ports:
-            - 5532:5432
     rabbit:
         image: rabbitmq:latest
         env_file:
@@ -87,7 +78,6 @@ services:
         entrypoint: sh rabbit/01-init.sh
         volumes:
             - ./scripts/rabbit:/rabbit
-    
 volumes:
     local_postgres_data: {}
     redis_data: {}

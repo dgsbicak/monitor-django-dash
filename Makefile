@@ -1,28 +1,27 @@
 
-makemigrations:
-	python manage.py makemigrations
-
+migrations:
+	docker-compose run --rm web python manage.py makemigrations
 migrate:
-	python manage.py migrate
-
+	docker-compose run --rm web python manage.py migrate
 runserver:
-	python manage.py runserver 0.0.0.0:8000
-
-test:
-	python manage.py test -v 2
-
-shell:
-	python manage.py shell
-
-removemigrations:
-	find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
-	find . -path "*/migrations/*.pyc"  -delete
-
+	docker-compose run --rm web python manage.py runserver 0.0.0.0:8000
 runcorn:
-	gunicorn middleware.wsgi -b 0.0.0.0:8000 -w 8
-
+	docker-compose run --rm web gunicorn middleware.wsgi -b 0.0.0.0:8000 -w $(nproc)
+test:
+	docker-compose run --rm web python manage.py test -v 2
+dbcheck:
+	docker-compose run --rm web python manage.py check --database default
+shell:
+	docker-compose run --rm web python manage.py shell
 collect:
-	python manage.py collectstatic
-
+	docker-compose run --rm web  python manage.py collectstatic
 up:
 	docker-compose up -d
+down:
+	docker-compose down
+restart:
+	docker-compose restart
+log:
+	docker-compose logs -f --tail 100
+logweb:
+	docker-compose logs -f --tail 100 web

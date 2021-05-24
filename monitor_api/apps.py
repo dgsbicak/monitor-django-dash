@@ -5,4 +5,4 @@ class MonitorApiConfig(AppConfig):
     name = 'monitor_api'
 
     def ready(self):
-        from monitor_api import signals
+        from monitor_api.utils import signals

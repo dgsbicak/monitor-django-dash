@@ -12,3 +12,18 @@ A simple Django project for educational purposes.
 - Nginx: Proxy Pass, SSL configurations
 - Multiple Docker container management
 
+
+
+### Quick Start
+
+
+***Build the containers***
+```
+docker-compose build
+```
+
+***Start the services***
+```
+docker-compose up -d
+```
+

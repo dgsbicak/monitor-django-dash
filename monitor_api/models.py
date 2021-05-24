@@ -1,8 +1,10 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-
 from datetime import date, datetime, timedelta
 from django.utils import timezone
+
+from .users import User
+
 
 class Machine(models.Model):
     class MachineType(models.TextChoices):

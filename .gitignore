@@ -230,7 +230,6 @@ Thumbs.db
 
 # End of https://www.toptal.com/developers/gitignore/api/django,python
 
-
-configs/nginx/cert/*
+.vscode
 .env/.app
 celerybeat-schedule

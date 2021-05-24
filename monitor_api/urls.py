@@ -14,8 +14,6 @@ urlpatterns = [
     path('machine/<str:machinename>', views.MachineDetail.as_view(), name='detailmachine'),
     path('machineinfo/', views.MachineInfoList.as_view(), name='listmacinfo'),
     path('machineinfo/<int:pk>', views.MachineInfoDetail.as_view(), name='detailmacinfo'),
-    path('users/', views.UserList.as_view()),
-    path('users/<int:pk>/', views.UserDetail.as_view()),
     path('generate/', GenerateRandomMachineView.as_view(), name="generate"),
 ]
 

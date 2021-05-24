@@ -1,9 +1,9 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
+from django.test import TestCase
 from django.urls import reverse
-from django.contrib.auth.models import User
 
-from .models import Machine, MachineInfo
+from monitor_api.models import Machine, MachineInfo, User
 
 
 class PostTests(APITestCase):
@@ -19,20 +19,20 @@ class PostTests(APITestCase):
         testuser1 = User.objects.create_user(username="test_user1", password="testuser")
         self.assertEqual(self.client.login(username="test_user1", password="testuser"), True)
         url = reverse("monitor_api:listmachine")
-        machineinfo =     {
+        machineinfo = {
             "machine": 1,
             "cpuutil": 0.1,
             "cpumem": 0.1,
             "diskspaceleft": 0.1,
         }
-        response = self.client.post(url, data, format='json')
+        response = self.client.post(url, machineinfo, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
 
 
 class TestCreateMachine(TestCase):
     @classmethod
-    def setUpTestData(cls):
+    def setUp(cls):
         test_machine = Machine.objects.create(machinename="cloud77",
              machineid=1077, hasgpu=False, machinetype="CS")
         testuser1 = User.objects.create_user(username="test_user1", password="testuser")

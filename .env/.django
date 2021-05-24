@@ -3,11 +3,10 @@
 SECRET_KEY=django-insecure-1!_p)(mqs120z#4-!g05#hb!u_bou(m#=93*(#41px_1achgg3
 
 DJANGO_DEBUG=true
-DJANGO_ALLOWED_HOSTS=192.168.0.27
+DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0,webdjango
 
 
 # LOGGER
-
 LOG_LEVEL=INFO
 LOG_BACKUP_COUNT=2
 LOG_MAX_BYTES=5242880
@@ -15,13 +14,11 @@ LOG_FILE=logs/app.log
 
 
 # REDIS
-
 REDIS_PASS=Rf8biG+YDkejAR+7omidXdNyVyvfvZgPap1mdVyjD67y1irlNQHKP/5EWdvsAdWOljWgK7RgyNuIfAKh
-REDIS_URL=redis://192.168.0.27:6000/0
+REDIS_URL=redis://redis/0
 
 
 # CELERY
-
-CELERY_BROKER_URL=amqp://testuser:testpass@192.168.0.27:5672/testvhost
-CELERY_RESULT_BACKEND=redis://192.168.0.27:6000/1
+CELERY_BROKER_URL=amqp://testuser:testpass@rabbit/testvhost
+CELERY_RESULT_BACKEND=redis://redis/1
 

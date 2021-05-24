@@ -2,6 +2,8 @@ FROM python:3.8-alpine
 
 ENV PYTHONBUFFERED 1
 
+RUN mkdir /app
+WORKDIR /app
 COPY . .
 
 # Install Packages
@@ -16,4 +18,4 @@ RUN rm -rf ~/.cache/pip
 
 EXPOSE 8000
 
-WORKDIR /app
+
