@@ -21,6 +21,8 @@ down:
 	docker-compose down
 restart:
 	docker-compose restart
+resweb:
+	docker-compose restart web
 log:
 	docker-compose logs -f --tail 100
 logweb:

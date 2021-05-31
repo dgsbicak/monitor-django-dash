@@ -22,7 +22,9 @@ class Command(BaseCommand):
                 db_conn = True
                 break
             except OperationalError:
-                self.stdout.write(f'Database is unavailable. Retry:{n}, waiting {kwargs["nsleep"]} second...')
+                self.stdout.write(
+                    self.style.WARNING(f'Database is unavailable. Retry:{n}, waiting {kwargs["nsleep"]} second...')
+                )
                 time.sleep(kwargs["nsleep"])
             except Exception as e:
                 self.stdout.write(self.style.ERROR(f"Database Error: {str(e)}"))

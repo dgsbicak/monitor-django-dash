@@ -1,0 +1,12 @@
+DISK_SPACE_LEFT_THRESH=10000
+
+MAIL_TO=example@mail.com
+MAIL_FROM=example@mail.com
+
+EMAIL_USE_TLS=true
+DEFAULT_FROM_EMAIL=example@mail.com
+EMAIL_URL=smtp://example@mail.com:password@smtp.gmail.com:587
+
+APP_DEFAULT_USER_NAME=defaultuser
+APP_DEFAULT_USER_PASS=defaultpass
+APP_DEFAULT_USER_EMAIL=example@mail.com

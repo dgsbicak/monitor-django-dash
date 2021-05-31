@@ -2,10 +2,9 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth import password_validation
-from django.contrib.auth.forms import UsernameField
 from django.utils.translation import gettext_lazy as _
 
-from monitor_api.users import User
+from monitor_api.models import User
 
 
 class GenerateRandomMachineForm(forms.Form):
@@ -14,7 +13,6 @@ class GenerateRandomMachineForm(forms.Form):
             MinValueValidator(0),
             MaxValueValidator(5)]
     )
-
 
 class UserCreationForm(forms.ModelForm):
     """
@@ -37,10 +35,27 @@ class UserCreationForm(forms.ModelForm):
         help_text=_("Enter the same password as before, for verification."),
     )
 
+    email = forms.EmailField(
+        label=_("E-mail"),
+        max_length=150,
+        )
+    username = forms.CharField(
+        label=_("Username"),
+        max_length=150,
+    )
+    first_name = forms.CharField(
+        label=_("First Name"),
+        max_length=150,
+    )
+    last_name = forms.CharField(
+        label=_("Last Name"),
+        max_length=150,
+    )
+
+
     class Meta:
         model = User
-        fields = ("username",)
-        field_classes = {'username': UsernameField}
+        fields = ("username", "email", "password1", "password2", "first_name", "last_name")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

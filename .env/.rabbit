@@ -4,4 +4,4 @@ RABBITMQ_USER=testuser
 RABBITMQ_PASSWORD=testpass
 RABBITMQ_VHOST=testvhost
 RABBITMQ_PID_FILE=/var/lib/rabbitmq/mnesia/rabbitmq
-RABBITMQ_BROKER_URL=amqp://testuser:testpass@192.168.0.27:5672/testvhost
+RABBITMQ_BROKER_URL=amqp://testuser:testpass@rabbit/testvhost
